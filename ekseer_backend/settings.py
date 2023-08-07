@@ -147,3 +147,4 @@ REST_KNOX = {
     'USER_SERIALIZER': 'ekseer_api.serializers.UserSerializer',
     'TOKEN_TTL': timedelta(hours=48)
 }
+

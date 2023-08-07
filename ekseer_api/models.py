@@ -14,18 +14,6 @@ class UserManager(BaseUserManager):
         user.save()
         return user
 
-    def create_superuser(self, email, password, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-
-        if not extra_fields.get('is_staff'):
-            raise ValueError("Superuser must have is_staff = True")
-
-        if not extra_fields.get('is_superuser'):
-            raise ValueError("Superuser must have is_superuser = True")
-        return self.create_user(email, password, **extra_fields)
-
-
 class CustomUser(AbstractBaseUser):
     full_name = models.CharField(max_length=255, null=False, blank=False,
             help_text='Full name should contain only letters.',
@@ -36,11 +24,7 @@ class CustomUser(AbstractBaseUser):
             code='invalid_full_name'
         )
     ])
-    # iqama_number_regex = r'^[1-2][0-9]{9}$'
-    # iqama_number_validator = RegexValidator(
-    #     regex=iqama_number_regex,
-    #     message='IQAMA number must start with 1 or 2 and be 10 digits long.'
-    # )
+
     iqama_number = models.CharField(
         max_length=10,
         unique=True,
@@ -94,21 +78,30 @@ class CustomUser(AbstractBaseUser):
     )
     password = models.CharField(max_length=128, null=True)
 
-
-    # password = models.CharField(
-    #     max_length=128,
-    #     help_text='The password should be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.',
-    #     default='',
-    #     blank=False,
-    #     null=False,
-    #     validators=[RegexValidator(
-    #         regex='^.{8,128}$',
-    #         message='The password must be at least 8 characters long and no more than 128 characters long.',
-    #     )],
-    # )
+    scfhs_registration = models.CharField(max_length=255, null=True, blank=True)
+    copy_of_scfhs_registration_card = models.ImageField(
+        upload_to='copy_of_scfhs_registration_card',
+        max_length=512,
+        null=True,
+        blank=True,
+    )
+    cv = models.FileField(
+        upload_to='doctors_cv',
+        max_length=512,
+        null=True,
+        blank=True,
+    )
+    personal_photo = models.ImageField(
+        upload_to='doctors_personal_photo',
+        max_length=512,
+        null=True,
+        blank=True,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    is_superuser = models.BooleanField(default=False)
+    is_doctor = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
+    is_actived = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'iqama_number'
     REQUIRED_FIELDS = [
@@ -125,16 +118,123 @@ class CustomUser(AbstractBaseUser):
     def __str__(self):
         return self.iqama_number
     
-    def image_img(self):
-        if self.copy_of_iqama_number:
-            return u'<img src="%s" width="50" height="50" />'% self.copy_of_iqama_number.url
-        else:
-            return '(Sin Imagen)'
-    image_img.short_description = "Thumb"
-    image_img.allowed_tags = True
-
     def has_module_perms(self, app_label):
         return True
 
     def has_perm(self, perm, obj=None):
         return True
+
+
+# class Doctor(AbstractBaseUser):
+#     full_name = models.CharField(max_length=255, null=False, blank=False,
+#             help_text='Full name should contain only letters.',
+#         validators=[
+#         RegexValidator(
+#             regex='^[A-Za-z ]+$',
+#             message='Full name should contain only letters.',
+#             code='invalid_full_name'
+#         )
+#     ])
+#     iqama_number = models.CharField(
+#         max_length=10,
+#         unique=True,
+#         help_text='IQAMA number must start with 1 or 2 and be 10 digits long.',
+#         validators=[RegexValidator(
+#         regex=r'^[1-2][0-9]{9}$',
+#         message='IQAMA number must start with 1 or 2 and be 10 digits long.'
+#     )]
+#     )
+#     copy_of_iqama_number = models.ImageField(
+#         upload_to='copy_of_iqama_number',
+#         max_length=512,
+#         null=False,
+#         blank=False,
+#     )
+#     scfhs_registration = models.CharField(max_length=255, null=False, blank=False)
+
+#     copy_of_scfhs_registration_card = models.ImageField(
+#         upload_to='copy_of_scfhs_registration_card',
+#         max_length=512,
+#         null=False,
+#         blank=False,
+#     )
+
+#     mobile_number = models.CharField(
+#         max_length=9,
+#         unique=True,
+#         help_text='The mobile number should start with 5 and be 9 digits long.',
+#         default='',
+#         blank=False,
+#         null=False,
+#         validators=[
+#             RegexValidator(
+#                 regex='^5\d{8}$',
+#                 message='The mobile number should start with 5 and be 9 digits long.',
+#             ),
+#         ],
+#     )
+#     email = models.EmailField(
+#         unique=True,
+#         help_text='The email address should be unique and valid.',
+#         default='',
+#         blank=False,
+#         null=False,
+#         validators=[
+#             EmailValidator
+#         ],
+#     )
+#     date_of_birth = models.DateField(
+#         blank=False,
+#         null=False,
+#     )
+#     nationality = models.CharField(
+#         max_length=255,
+#         help_text='The nationality should be a valid country code.',
+#         default='',
+#         blank=False,
+#         null=False,
+#     )
+#     cv = models.FileField(
+#         upload_to='doctors_cv',
+#         max_length=512,
+#         null=False,
+#         blank=False,
+#     )
+#     personal_photo = models.ImageField(
+#         upload_to='doctors_personal_photo',
+#         max_length=512,
+#         null=False,
+#         blank=False,
+#     )
+#     password = models.CharField(max_length=128, null=True)
+
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#     is_superuser = models.BooleanField(default=False)
+#     is_verified = models.BooleanField(default=False)
+#     is_active = models.BooleanField(default=False)
+
+#     USERNAME_FIELD = 'iqama_number'
+#     REQUIRED_FIELDS = [
+#     'full_name',
+#     'copy_of_iqama_number', 
+#     'scfhs_registration',
+#     'copy_of_scfhs_registration_card',
+#     'mobile_number', 
+#     'email', 
+#     'date_of_birth', 
+#     'nationality',
+#     'cv',
+#     'personal_photo',
+#     'password']
+
+#     objects = UserManager()
+
+#     def __str__(self):
+#         return self.iqama_number
+
+#     def has_module_perms(self, app_label):
+#         return True
+
+#     def has_perm(self, perm, obj=None):
+#         return True
