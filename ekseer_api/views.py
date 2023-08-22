@@ -4,8 +4,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
-from .models import CustomUser
-from .serializers import CreateUserSerializer, UpdateUserSerializer, LoginSerializer, UserSerializer
+from .models import CustomUser, Call
+from .serializers import CreateUserSerializer, UpdateUserSerializer, LoginSerializer, UserSerializer, CreateCallSerializer, UpdateCallSerializer
 from knox import views as knox_views
 from django.contrib.auth import login
 
@@ -13,6 +13,11 @@ from django.contrib.auth import login
 class CreateUserAPI(CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CreateUserSerializer
+    permission_classes = (AllowAny,)
+
+class CreateCallAPI(CreateAPIView):
+    queryset = Call.objects.all()
+    serializer_class = CreateCallSerializer
     permission_classes = (AllowAny,)
 
 class UserViewSet(ListAPIView):
@@ -24,11 +29,23 @@ class UserViewSet(ListAPIView):
         serializer = self.serializer_class(users, many=True)
         return Response(serializer.data)
 
+class CallViewSet(ListAPIView):
+    queryset = Call.objects.all()
+    serializer_class = CreateCallSerializer
+
+    def get_all_calls(self, request):
+        calls = self.queryset.all()
+        serializer = self.serializer_class(calls, many=True)
+        return Response(serializer.data)
+
 
 class UpdateUserAPI(UpdateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UpdateUserSerializer
 
+class UpdateCallAPI(UpdateAPIView):
+    queryset = Call.objects.all()
+    serializer_class = UpdateCallSerializer
 
 class LoginAPIView(knox_views.LoginView):
     permission_classes = (AllowAny, )

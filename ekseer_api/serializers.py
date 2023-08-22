@@ -1,5 +1,5 @@
 from rest_framework import authentication, serializers, views
-from .models import CustomUser
+from .models import CustomUser, Call
 from django.core.validators import RegexValidator
 from django.contrib.auth import authenticate
 
@@ -78,28 +78,35 @@ class LoginSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+class CreateCallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Call
+        fields = '__all__'
+
+    def validate(self, attrs):
+        meeting_id = attrs.get('meeting_id', '').strip().lower()
+        if Call.objects.filter(meeting_id=meeting_id).exists():
+            raise serializers.ValidationError('Meeting id already exists.')
+        return attrs
+
+    def create_call(self, meeting_id, patient_id,doctor_id, **extra_fields):
+        if not meeting_id:
+            raise ValueError("The meeting_id is not given.")
+        call = self.model(meeting_id=meeting_id,patient_id=patient_id, doctor_id=doctor_id,is_new=True, **extra_fields)
+        call.save()
+        return call
     
+class UpdateCallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Call
+        fields = '__all__'
 
-# class DoctorSerializer(serializers.ModelSerializer):
-#     date_of_birth = serializers.DateField(format='%m-%d-%Y')
-#     class Meta:
-#         model = Doctor
-#         fields = '__all__'
 
-# class CreateDoctorSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Doctor
-#         fields = '__all__'
-#         extra_kwargs = {
-#             'password': {'required': True}
-#         }
+    def update(self, instance, validated_data):
+        # password = validated_data.pop('password')
+        # if password:
+        #     instance.set_password(password)
+        instance = super().update(instance, validated_data)
+        return instance
 
-#     def validate(self, attrs):
-#         email = attrs.get('email', '').strip().lower()
-#         if Doctor.objects.filter(email=email).exists():
-#             raise serializers.ValidationError('Doctor with this email id already exists.')
-#         return attrs
-
-#     def create(self, validated_data):
-#         doctor = Doctor.objects.create_user(**validated_data)
-#         return doctor
