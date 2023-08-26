@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_rest_passwordreset',
     'ekseer_api',
     'corsheaders',
     'knox',
@@ -81,7 +82,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'ekseer_backend.wsgi.application'
+# WSGI_APPLICATION = 'ekseer_backend.wsgi.application'
 
 
 # Database
@@ -148,3 +149,9 @@ REST_KNOX = {
     'TOKEN_TTL': timedelta(hours=48)
 }
 
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "ahmedabnaby.97@gmail.com"
+EMAIL_HOST_PASSWORD = "vjvazazuqmrftjqn"
