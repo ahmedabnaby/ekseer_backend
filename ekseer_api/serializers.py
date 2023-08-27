@@ -34,13 +34,8 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = [
             'full_name',
-            'iqama_number', 
-            'copy_of_iqama_number', 
             'mobile_number', 
             'email', 
-            'date_of_birth', 
-            'nationality',
-            'password'
         ]
         extra_kwargs = {
             'password': {'write_only':True}
@@ -48,9 +43,9 @@ class UpdateUserSerializer(serializers.ModelSerializer):
 
 
     def update(self, instance, validated_data):
-        password = validated_data.pop('password')
-        if password:
-            instance.set_password(password)
+        # password = validated_data.pop('password')
+        # if password:
+        #     instance.set_password(password)
         instance = super().update(instance, validated_data)
         return instance
 
