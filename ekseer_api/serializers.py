@@ -33,7 +33,6 @@ class UpdateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = [
-            'full_name',
             'mobile_number', 
             'email', 
         ]
