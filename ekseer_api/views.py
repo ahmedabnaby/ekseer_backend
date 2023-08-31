@@ -4,8 +4,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
-from .models import CustomUser, Call
-from .serializers import CreateUserSerializer, UpdateUserSerializer, LoginSerializer, UserSerializer, CreateCallSerializer, UpdateCallSerializer
+from .models import CustomUser, Call, Consultation
+from .serializers import CreateUserSerializer, UpdateUserSerializer, LoginSerializer, UserSerializer, CreateCallSerializer, UpdateCallSerializer, CreateConsultationSerializer, UpdateConsultationSerializer
 from knox import views as knox_views
 from django.contrib.auth import login
 
@@ -18,6 +18,11 @@ class CreateUserAPI(CreateAPIView):
 class CreateCallAPI(CreateAPIView):
     queryset = Call.objects.all()
     serializer_class = CreateCallSerializer
+    permission_classes = (AllowAny,)
+
+class CreateConsultationAPI(CreateAPIView):
+    queryset = Consultation.objects.all()
+    serializer_class = CreateConsultationSerializer
     permission_classes = (AllowAny,)
 
 class UserViewSet(ListAPIView):
@@ -37,6 +42,15 @@ class CallViewSet(ListAPIView):
         calls = self.queryset.all()
         serializer = self.serializer_class(calls, many=True)
         return Response(serializer.data)
+    
+class ConsultationViewSet(ListAPIView):
+    queryset = Consultation.objects.all()
+    serializer_class = CreateConsultationSerializer
+
+    def get_all_consultations(self, request):
+        consultations = self.queryset.all()
+        serializer = self.serializer_class(consultations, many=True)
+        return Response(serializer.data)
 
 
 class UpdateUserAPI(UpdateAPIView):
@@ -46,6 +60,10 @@ class UpdateUserAPI(UpdateAPIView):
 class UpdateCallAPI(UpdateAPIView):
     queryset = Call.objects.all()
     serializer_class = UpdateCallSerializer
+
+class UpdateConsultationAPI(UpdateAPIView):
+    queryset = Consultation.objects.all()
+    serializer_class = UpdateConsultationSerializer
 
 class LoginAPIView(knox_views.LoginView):
     permission_classes = (AllowAny, )

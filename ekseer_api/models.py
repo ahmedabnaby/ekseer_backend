@@ -134,12 +134,25 @@ class Call(models.Model):
     doctor_id = models.IntegerField(null=True,blank=True)
     is_new = models.BooleanField(default=True)
 
+class Consultation(models.Model):
+    id = models.AutoField(primary_key=True)
+    patient_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE,null=False,blank=False)
+    doctor_id = models.IntegerField(null=False,blank=False)
+    chief_complaint = models.CharField(max_length=255, null=False, blank=False)
+    history_of_illness = models.CharField(max_length=255, null=False, blank=False)
+    review_of_systems = models.CharField(max_length=255, null=False, blank=False)
+    examination = models.CharField(max_length=255, null=False, blank=False)
+    assessment = models.CharField(max_length=255, null=True, blank=True)
+    medication = models.CharField(max_length=255, null=True, blank=True)
+    sick_leave = models.IntegerField(null=True, blank=True)
+
+
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
 
     # the below like concatinates your websites reset password url and the reset email token which will be required at a later stage
-    email_plaintext_message = "Open the link to reset your password" + " " + "{}{}".format(instance.request.build_absolute_uri("http://ekseer.alsahaba.sa/forget-password-form/"), reset_password_token.key)
+    email_plaintext_message = "Open the link to reset your password" + " " + "{}{}".format(instance.request.build_absolute_uri("https://ekseer.alsahaba.sa/forget-password-form/"), reset_password_token.key)
     
     """
         this below line is the django default sending email function, 

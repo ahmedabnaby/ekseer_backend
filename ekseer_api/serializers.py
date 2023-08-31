@@ -1,5 +1,5 @@
 from rest_framework import authentication, serializers, views
-from .models import CustomUser, Call
+from .models import CustomUser, Call, Consultation
 from django.core.validators import RegexValidator
 from django.contrib.auth import authenticate
 
@@ -98,9 +98,35 @@ class UpdateCallSerializer(serializers.ModelSerializer):
 
 
     def update(self, instance, validated_data):
-        # password = validated_data.pop('password')
-        # if password:
-        #     instance.set_password(password)
         instance = super().update(instance, validated_data)
         return instance
 
+
+class CreateConsultationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Consultation
+        fields = '__all__'
+
+    def create_consultation(self, patient_id,doctor_id, chief_complaint,history_of_illness,review_of_systems,examination,assessment,medication,sick_leave,**extra_fields):
+        consultation = self.model(
+            patient_id=patient_id, 
+            doctor_id=doctor_id,
+            chief_complaint=chief_complaint,
+            history_of_illness=history_of_illness,
+            review_of_systems=review_of_systems,
+            examination=examination,assessment=assessment,
+            medication=medication,
+            sick_leave=sick_leave, 
+            **extra_fields)
+        consultation.save()
+        return consultation
+    
+class UpdateConsultationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Consultation
+        fields = '__all__'
+
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        return instance
