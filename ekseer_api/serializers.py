@@ -35,6 +35,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         fields = [
             'mobile_number', 
             'email', 
+            'is_staff'
         ]
         extra_kwargs = {
             'password': {'write_only':True}

@@ -104,6 +104,7 @@ class CustomUser(AbstractBaseUser):
     updated_at = models.DateTimeField(auto_now=True)
     is_doctor = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
     is_actived = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'iqama_number'
