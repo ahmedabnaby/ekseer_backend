@@ -1,5 +1,5 @@
 from rest_framework import authentication, serializers, views
-from .models import CustomUser, Call, Consultation
+from .models import CustomUser, Call, Consultation, Rating
 from django.core.validators import RegexValidator
 from django.contrib.auth import authenticate
 
@@ -35,7 +35,8 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         fields = [
             'mobile_number', 
             'email', 
-            'is_staff'
+            'is_staff',
+            'is_verified'
         ]
         extra_kwargs = {
             'password': {'write_only':True}
@@ -85,10 +86,10 @@ class CreateCallSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Meeting id already exists.')
         return attrs
 
-    def create_call(self, meeting_id, patient_id,doctor_id, **extra_fields):
+    def create_call(self, meeting_id, patient_id,doctor_id,awaiting_time, **extra_fields):
         if not meeting_id:
             raise ValueError("The meeting_id is not given.")
-        call = self.model(meeting_id=meeting_id,patient_id=patient_id, doctor_id=doctor_id,is_new=True, **extra_fields)
+        call = self.model(meeting_id=meeting_id,awaiting_time=awaiting_time,patient_id=patient_id, doctor_id=doctor_id,is_new=True, **extra_fields)
         call.save()
         return call
     
@@ -108,7 +109,7 @@ class CreateConsultationSerializer(serializers.ModelSerializer):
         model = Consultation
         fields = '__all__'
 
-    def create_consultation(self, patient_id,doctor_id, chief_complaint,history_of_illness,review_of_systems,examination,assessment,medication,sick_leave,**extra_fields):
+    def create_consultation(self, patient_id,doctor_id,call_id ,chief_complaint,history_of_illness,review_of_systems,examination,assessment,medication,sick_leave,**extra_fields):
         consultation = self.model(
             patient_id=patient_id, 
             doctor_id=doctor_id,
@@ -117,6 +118,7 @@ class CreateConsultationSerializer(serializers.ModelSerializer):
             review_of_systems=review_of_systems,
             examination=examination,assessment=assessment,
             medication=medication,
+            call_id=call_id,
             sick_leave=sick_leave, 
             **extra_fields)
         consultation.save()
@@ -131,3 +133,20 @@ class UpdateConsultationSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance = super().update(instance, validated_data)
         return instance
+    
+class CreateRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = '__all__'
+
+    def create_rating(self, patient_id,doctor_id,consultation_id,rating,message,**extra_fields):
+        create_rating = self.model(
+            patient_id=patient_id, 
+            doctor_id=doctor_id,
+            rating=rating,
+            consultation_id=consultation_id,
+            message=message,
+            **extra_fields)
+        create_rating.save()
+        return create_rating
+    

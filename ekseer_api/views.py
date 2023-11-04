@@ -4,8 +4,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
-from .models import CustomUser, Call, Consultation
-from .serializers import CreateUserSerializer, UpdateUserSerializer, LoginSerializer, UserSerializer, CreateCallSerializer, UpdateCallSerializer, CreateConsultationSerializer, UpdateConsultationSerializer
+from .models import CustomUser, Call, Consultation, Rating
+from .serializers import CreateRatingSerializer, CreateUserSerializer, UpdateUserSerializer, LoginSerializer, UserSerializer, CreateCallSerializer, UpdateCallSerializer, CreateConsultationSerializer, UpdateConsultationSerializer
 from knox import views as knox_views
 from django.contrib.auth import login
 
@@ -79,3 +79,17 @@ class LoginAPIView(knox_views.LoginView):
             return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(response.data, status=status.HTTP_200_OK)
+
+class CreateRatingAPI(CreateAPIView):
+    queryset = Rating.objects.all()
+    serializer_class = CreateRatingSerializer
+    permission_classes = (AllowAny,)
+
+class RatingViewSet(ListAPIView):
+    queryset = Rating.objects.all()
+    serializer_class = CreateRatingSerializer
+
+    def get_all_ratings(self, request):
+        ratings = self.queryset.all()
+        serializer = self.serializer_class(ratings, many=True)
+        return Response(serializer.data)

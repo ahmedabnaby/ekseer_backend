@@ -7,10 +7,12 @@ urlpatterns = [
     path('users/', views.UserViewSet.as_view()),
     path('calls/', views.CallViewSet.as_view()),
     path('consultations/', views.ConsultationViewSet.as_view()),
+    path('ratings/', views.RatingViewSet.as_view()),
 
     path('register/', views.CreateUserAPI.as_view()),
     path('create-call/', views.CreateCallAPI.as_view()),
     path('create-consultation/', views.CreateConsultationAPI.as_view()),
+    path('create-rating/', views.CreateRatingAPI.as_view()),
 
     path('update-user/<int:pk>/', views.UpdateUserAPI.as_view()),
     path('update-call/<int:pk>/', views.UpdateCallAPI.as_view()),

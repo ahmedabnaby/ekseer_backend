@@ -17,32 +17,33 @@ class UserManager(BaseUserManager):
         user.save()
         return user
 
+
 class CustomUser(AbstractBaseUser):
     full_name = models.CharField(max_length=255, null=False, blank=False,
-            help_text='Full name should contain only letters.',
-        validators=[
-        RegexValidator(
-            regex='^[A-Za-z ]+$',
-            message='Full name should contain only letters.',
-            code='invalid_full_name'
-        )
-    ])
+                                 help_text='Full name should contain only letters.',
+                                 validators=[
+                                     RegexValidator(
+                                         regex='^[A-Za-z ]+$',
+                                         message='Full name should contain only letters.',
+                                         code='invalid_full_name'
+                                     )
+                                 ])
 
     iqama_number = models.CharField(
         max_length=10,
         unique=True,
         help_text='IQAMA number must start with 1 or 2 and be 10 digits long.',
         validators=[RegexValidator(
-        regex=r'^[1-2][0-9]{9}$',
-        message='IQAMA number must start with 1 or 2 and be 10 digits long.'
-    )]
+            regex=r'^[1-2][0-9]{9}$',
+            message='IQAMA number must start with 1 or 2 and be 10 digits long.'
+        )]
     )
     copy_of_iqama_number = models.ImageField(
         upload_to='copy_of_iqama_number',
         max_length=512,
         null=False,
         blank=False,
-        # validators=[FileExtensionValidator(allowed_extensions=["pdf",'png','jpg','jpeg'])]    
+        # validators=[FileExtensionValidator(allowed_extensions=["pdf",'png','jpg','jpeg'])]
     )
     mobile_number = models.CharField(
         max_length=9,
@@ -81,7 +82,8 @@ class CustomUser(AbstractBaseUser):
     )
     password = models.CharField(max_length=128, null=True)
 
-    scfhs_registration = models.CharField(max_length=255, null=True, blank=True)
+    scfhs_registration = models.CharField(
+        max_length=255, null=True, blank=True)
     copy_of_scfhs_registration_card = models.ImageField(
         upload_to='copy_of_scfhs_registration_card',
         max_length=512,
@@ -109,41 +111,50 @@ class CustomUser(AbstractBaseUser):
 
     USERNAME_FIELD = 'iqama_number'
     REQUIRED_FIELDS = [
-    'full_name',
-    'copy_of_iqama_number', 
-    'mobile_number', 
-    'email', 
-    'date_of_birth', 
-    'nationality',
-    'password']
+        'full_name',
+        'copy_of_iqama_number',
+        'mobile_number',
+        'email',
+        'date_of_birth',
+        'nationality',
+        'password']
 
     objects = UserManager()
 
     def __str__(self):
         return self.iqama_number
-    
+
     def has_module_perms(self, app_label):
         return True
 
     def has_perm(self, perm, obj=None):
         return True
 
+
 class Call(models.Model):
     id = models.AutoField(primary_key=True)
-    meeting_id = models.CharField(max_length=255,null=True,blank=True)
-    patient_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE,null=True,blank=True)
-    doctor_id = models.IntegerField(null=True,blank=True)
+    meeting_id = models.CharField(max_length=255, null=True, blank=True)
+    patient_id = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, null=True, blank=True)
+    doctor_id = models.IntegerField(null=True, blank=True)
+    awaiting_time = models.CharField(max_length=255, null=True, blank=True)
     is_new = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
 class Consultation(models.Model):
     id = models.AutoField(primary_key=True)
-    patient_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE,null=False,blank=False)
-    doctor_id = models.IntegerField(null=False,blank=False)
+    patient_id = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, null=False, blank=False)
+    doctor_id = models.IntegerField(null=False, blank=False)
     chief_complaint = models.CharField(max_length=255, null=False, blank=False)
-    history_of_illness = models.CharField(max_length=255, null=False, blank=False)
-    review_of_systems = models.CharField(max_length=255, null=False, blank=False)
+    history_of_illness = models.CharField(
+        max_length=255, null=False, blank=False)
+    review_of_systems = models.CharField(
+        max_length=255, null=False, blank=False)
+    call_id = models.ForeignKey(
+        Call, on_delete=models.CASCADE, null=True, blank=True)
     examination = models.CharField(max_length=255, null=False, blank=False)
     assessment = models.CharField(max_length=255, null=True, blank=True)
     medication = models.CharField(max_length=255, null=True, blank=True)
@@ -152,13 +163,28 @@ class Consultation(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
+class Rating(models.Model):
+    id = models.AutoField(primary_key=True)
+    patient_id = models.IntegerField(null=True, blank=True)
+
+    doctor_id = models.IntegerField(null=True, blank=True)
+    consultation_id = models.ForeignKey(
+        Consultation, on_delete=models.CASCADE, null=True, blank=True)
+    rating = models.IntegerField(null=True, blank=True)
+    message = models.CharField(
+        max_length=255, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
 
     # the below like concatinates your websites reset password url and the reset email token which will be required at a later stage
-    email_plaintext_message = "Open the link to reset your password" + " " + "{}{}".format(instance.request.build_absolute_uri("https://ekseer.alsahaba.sa/forget-password-form/"), reset_password_token.key)
-    
+    email_plaintext_message = "Open the link to reset your password" + " " + \
+        "{}{}".format(instance.request.build_absolute_uri(
+            "https://ekseer.alsahaba.sa/forget-password-form/"), reset_password_token.key)
+
     """
         this below line is the django default sending email function, 
         takes up some parameter (title(email title), message(email body), from(email sender), to(recipient(s))

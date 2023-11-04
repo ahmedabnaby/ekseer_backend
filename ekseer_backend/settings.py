@@ -155,3 +155,6 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "ahmedabnaby.97@gmail.com"
 EMAIL_HOST_PASSWORD = "vjvazazuqmrftjqn"
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
