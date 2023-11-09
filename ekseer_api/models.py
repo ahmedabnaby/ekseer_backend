@@ -137,6 +137,8 @@ class Call(models.Model):
     patient_id = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, null=True, blank=True)
     doctor_id = models.IntegerField(null=True, blank=True)
+    doctor_time = models.CharField(max_length=255, null=True, blank=True)
+    patient_time = models.CharField(max_length=255, null=True, blank=True)
     awaiting_time = models.CharField(max_length=255, null=True, blank=True)
     is_new = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -168,8 +170,8 @@ class Rating(models.Model):
     patient_id = models.IntegerField(null=True, blank=True)
 
     doctor_id = models.IntegerField(null=True, blank=True)
-    consultation_id = models.ForeignKey(
-        Consultation, on_delete=models.CASCADE, null=True, blank=True)
+    call_id = models.ForeignKey(
+        Call, on_delete=models.CASCADE, null=True, blank=True)
     rating = models.IntegerField(null=True, blank=True)
     message = models.CharField(
         max_length=255, null=True, blank=True)

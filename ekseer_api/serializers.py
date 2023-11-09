@@ -86,10 +86,10 @@ class CreateCallSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Meeting id already exists.')
         return attrs
 
-    def create_call(self, meeting_id, patient_id,doctor_id,awaiting_time, **extra_fields):
+    def create_call(self, meeting_id, patient_id,doctor_id,doctor_time,patient_time,awaiting_time, **extra_fields):
         if not meeting_id:
             raise ValueError("The meeting_id is not given.")
-        call = self.model(meeting_id=meeting_id,awaiting_time=awaiting_time,patient_id=patient_id, doctor_id=doctor_id,is_new=True, **extra_fields)
+        call = self.model(meeting_id=meeting_id,awaiting_time=awaiting_time,patient_id=patient_id,patient_time=patient_time,doctor_time=doctor_time, doctor_id=doctor_id,is_new=True, **extra_fields)
         call.save()
         return call
     
@@ -139,14 +139,23 @@ class CreateRatingSerializer(serializers.ModelSerializer):
         model = Rating
         fields = '__all__'
 
-    def create_rating(self, patient_id,doctor_id,consultation_id,rating,message,**extra_fields):
+    def create_rating(self, patient_id,doctor_id,call_id,rating,message,**extra_fields):
         create_rating = self.model(
             patient_id=patient_id, 
             doctor_id=doctor_id,
             rating=rating,
-            consultation_id=consultation_id,
+            call_id=call_id,
             message=message,
             **extra_fields)
         create_rating.save()
         return create_rating
     
+class UpdateRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = '__all__'
+
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        return instance

@@ -5,7 +5,7 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import status
 from .models import CustomUser, Call, Consultation, Rating
-from .serializers import CreateRatingSerializer, CreateUserSerializer, UpdateUserSerializer, LoginSerializer, UserSerializer, CreateCallSerializer, UpdateCallSerializer, CreateConsultationSerializer, UpdateConsultationSerializer
+from .serializers import CreateRatingSerializer, CreateUserSerializer, UpdateUserSerializer, LoginSerializer, UserSerializer, CreateCallSerializer, UpdateCallSerializer, CreateConsultationSerializer, UpdateConsultationSerializer,UpdateRatingSerializer
 from knox import views as knox_views
 from django.contrib.auth import login
 
@@ -64,6 +64,10 @@ class UpdateCallAPI(UpdateAPIView):
 class UpdateConsultationAPI(UpdateAPIView):
     queryset = Consultation.objects.all()
     serializer_class = UpdateConsultationSerializer
+
+class UpdateRatingAPI(UpdateAPIView):
+    queryset = Consultation.objects.all()
+    serializer_class = UpdateRatingSerializer
 
 class LoginAPIView(knox_views.LoginView):
     permission_classes = (AllowAny, )

@@ -17,6 +17,7 @@ urlpatterns = [
     path('update-user/<int:pk>/', views.UpdateUserAPI.as_view()),
     path('update-call/<int:pk>/', views.UpdateCallAPI.as_view()),
     path('update-consultation/<int:pk>/', views.UpdateConsultationAPI.as_view()),
+    path('update-rating/<int:pk>/', views.UpdateRatingAPI.as_view()),
 
     path('login/', views.LoginAPIView.as_view()),
     path('logout/', LogoutView.as_view()),
